@@ -252,7 +252,10 @@ export default function Jobs() {
                   {g.jobs.map(job => (
                     <tr key={job.id} className="border-t border-slate-100 hover:bg-slate-50 cursor-pointer" onClick={() => openEdit(job)}>
                       <td className="p-3" onClick={e => e.stopPropagation()}><input type="checkbox" checked={selectedIds.has(job.id)} onChange={() => toggleSelect(job.id)} /></td>
-                      <td className="p-3 font-medium">{job.nama_project}</td>
+                      <td className="p-3">
+                        <div className="font-medium text-slate-900">{job.nama_project}</div>
+                        <div className="text-xs text-blue-600">{job.vendor?.nama || '(Tanpa Vendor)'}</div>
+                      </td>
                       <td className="p-3">
                         {job.deadline ? (() => {
                           const days = hitungSelisihHari(job.deadline)
