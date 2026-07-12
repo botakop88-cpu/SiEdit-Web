@@ -85,7 +85,6 @@ export default function Invoices() {
   async function toggleStatus(inv: any, e: React.MouseEvent) {
     e.stopPropagation()
     const baru = inv.status_bayar === 'Lunas' ? 'Belum Bayar' : 'Lunas'
-    if (!confirm(`Ubah status invoice ${inv.vendor_nama} menjadi ${baru}?`)) return
 
     const { error: invoiceError } = await supabase.from('invoice').update({ status_bayar: baru }).eq('id', inv.id)
     if (invoiceError) { alert('Gagal ubah status invoice'); return }
@@ -97,8 +96,9 @@ export default function Invoices() {
         status_bayar: baru,
         tanggal_lunas: baru === 'Lunas' ? new Date().toISOString().split('T')[0] : null,
       }).in('nama_project', projects).is('deleted_at', null)
-      if (jobError) { alert('Status invoice berubah, tapi status Job gagal diubah.'); return }
+      if (jobError) { alert('Invoice berubah, tapi Job gagal.'); return }
     }
+    alert(baru === 'Lunas' ? 'Status sudah diubah jadi Lunas' : 'Status sudah diubah jadi Belum Bayar')
     loadInvoices()
   }
 
