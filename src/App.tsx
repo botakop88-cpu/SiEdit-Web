@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { useState } from 'react'
 import Sidebar from './components/Sidebar'
 import BottomNav from './components/BottomNav'
 import Dashboard from './pages/Dashboard'
@@ -9,12 +8,10 @@ import Invoices from './pages/Invoices'
 import Settings from './pages/Settings'
 
 function App() {
-  const [isMobile] = useState(() => window.innerWidth < 768)
-
   return (
     <BrowserRouter>
       <div className="min-h-screen bg-gray-50 flex">
-        {!isMobile && <Sidebar />}
+        <div className="hidden md:flex"><Sidebar /></div>
         
         <main className="flex-1 overflow-auto pb-20 md:pb-0">
           <Routes>
@@ -27,7 +24,7 @@ function App() {
           </Routes>
         </main>
 
-        {isMobile && <BottomNav />}
+        <div className="flex md:hidden fixed bottom-0 left-0 right-0 z-50"><BottomNav /></div>
       </div>
     </BrowserRouter>
   )

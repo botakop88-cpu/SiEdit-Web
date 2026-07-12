@@ -244,7 +244,10 @@ export default function Jobs() {
               {groups.map(g => (
                 <>
                   <tr key={g.vendor} className="bg-yellow-50" style={g.vendor === '(Tanpa Vendor)' ? { background: '#f9fafb' } : {}}>
-                    <td colSpan={8} className="p-3 font-semibold text-sm flex items-center gap-2">{g.vendor} <span className="text-xs text-slate-500 font-normal">({g.jobs.length} job • {g.jobs.filter(j => j.status_bayar === 'Belum Bayar').length} Belum Bayar)</span></td>
+                    <td colSpan={8} className="p-3">
+                      <span className="font-semibold text-sm">{g.vendor}</span>
+                      <span className="text-xs text-slate-500 ml-2">({g.jobs.length} job · {g.jobs.filter(j => j.status_bayar === 'Belum Bayar').length} blm bayar)</span>
+                    </td>
                   </tr>
                   {g.jobs.map(job => (
                     <tr key={job.id} className="border-t border-slate-100 hover:bg-slate-50 cursor-pointer" onClick={() => openEdit(job)}>
