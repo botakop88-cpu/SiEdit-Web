@@ -243,7 +243,7 @@ export default function Jobs() {
             <tbody>
               {groups.map(g => (
                 <>
-                  <tr key={g.vendor} className="bg-yellow-50" style={g.vendor === '(Tanpa Vendor)' ? { background: '#f9fafb' } : {}}>
+                  <tr key={g.vendor} className="bg-slate-100" style={g.vendor === '(Tanpa Vendor)' ? { background: '#f1f5f9' } : {}}>
                     <td colSpan={8} className="p-3">
                       <span className="font-semibold text-sm">{g.vendor}</span>
                       <span className="text-xs text-slate-500 ml-2">({g.jobs.length} job · {g.jobs.filter(j => j.status_bayar === 'Belum Bayar').length} blm bayar)</span>
