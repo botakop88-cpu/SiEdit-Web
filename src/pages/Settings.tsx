@@ -19,7 +19,7 @@ export default function Settings() {
   }, [])
 
   function openSheet() {
-    window.open('https://docs.google.com/spreadsheets/d/1xc5AIj93ssn8M3YCIRUT8-oG8AEg5c0cJ8e8POqYdNY/edit?usp=sharing', '_blank')
+    window.open('https://docs.google.com/spreadsheets/d/15Y34AZ_spyNOL0l9Y0Zrvdcbbd0qMeDPtKBTNNiQwjQ/edit?gid=1821736230#gid=1821736230', '_blank')
   }
 
   return (
