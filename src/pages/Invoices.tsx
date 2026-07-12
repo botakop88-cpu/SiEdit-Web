@@ -88,6 +88,11 @@ export default function Invoices() {
     const baru = inv.status_bayar === 'Lunas' ? 'Belum Bayar' : 'Lunas'
     const { error } = await supabase.from('invoice').update({ status_bayar: baru }).eq('id', inv.id)
     if (error) { alert('Gagal ubah status'); return }
+    // Update status_bayar job yg terkait
+    const items = JSON.parse(inv.items_json || '[]')
+    items.forEach(function(it) {
+      supabase.from('job').update({ status_bayar: baru }).eq('nama_project', it.nama).is('deleted_at', null).then()
+    })
     loadInvoices()
   }
 
