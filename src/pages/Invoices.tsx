@@ -76,6 +76,20 @@ export default function Invoices() {
     setTab('riwayat')
   }
 
+  function reopenInvoice(inv: any) {
+    const win = window.open('', '_blank')
+    if (!win) { alert('Pop-up diblokir. Izinkan pop-up untuk membuka PDF.'); return }
+    const items = JSON.parse(inv.items_json || '[]')
+    generatePDF(win, inv.id.slice(0, 8).toUpperCase(), inv.vendor_nama, inv.tanggal, items, inv.total)
+  }
+
+  async function deleteInvoice(id: string) {
+    if (!confirm('Hapus invoice ini?')) return
+    const { error } = await supabase.from('invoice').update({ deleted_at: new Date().toISOString() }).eq('id', id)
+    if (error) { alert('Gagal hapus'); return }
+    loadInvoices()
+  }
+
   function generatePDF(win: Window, no: string, vendorNama: string, tanggal: string, items: { nama: string; harga: number; jenis: string }[], total: number) {
     win.document.write(`
       <!doctype html>
@@ -196,12 +210,19 @@ export default function Invoices() {
             ) : (
               <div className="divide-y divide-slate-100">
                 {invoices.map(inv => (
-                  <div key={inv.id} className="p-4 md:p-5 flex items-center justify-between hover:bg-slate-50">
-                    <div>
-                      <p className="font-medium text-slate-900">{inv.vendor_nama}</p>
+                  <div key={inv.id} className="p-4 md:p-5 flex items-center justify-between hover:bg-slate-50 cursor-pointer" onClick={() => reopenInvoice(inv)}>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-slate-900 truncate">{inv.vendor_nama}</p>
                       <p className="text-xs text-slate-500">{formatTanggal(inv.tanggal)} • {rupiah(inv.total)}</p>
                     </div>
-                    <span className="text-xs text-slate-400">Items: {JSON.parse(inv.items_json || '[]').length}</span>
+                    <span className="text-xs text-slate-400 mr-3">Items: {JSON.parse(inv.items_json || '[]').length}</span>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); deleteInvoice(inv.id); }}
+                      className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                      title="Hapus invoice"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    </button>
                   </div>
                 ))}
               </div>
