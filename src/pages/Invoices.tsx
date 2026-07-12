@@ -84,15 +84,21 @@ export default function Invoices() {
 
   async function toggleStatus(inv: any, e: React.MouseEvent) {
     e.stopPropagation()
-    if (!confirm(`Ubah status invoice ${inv.vendor_nama} menjadi ${inv.status_bayar === 'Lunas' ? 'Belum Bayar' : 'Lunas'}?`)) return
     const baru = inv.status_bayar === 'Lunas' ? 'Belum Bayar' : 'Lunas'
-    const { error } = await supabase.from('invoice').update({ status_bayar: baru }).eq('id', inv.id)
-    if (error) { alert('Gagal ubah status'); return }
-    // Update status_bayar job yg terkait
+    if (!confirm(`Ubah status invoice ${inv.vendor_nama} menjadi ${baru}?`)) return
+
+    const { error: invoiceError } = await supabase.from('invoice').update({ status_bayar: baru }).eq('id', inv.id)
+    if (invoiceError) { alert('Gagal ubah status invoice'); return }
+
     const items = JSON.parse(inv.items_json || '[]')
-    items.forEach(function(it) {
-      supabase.from('job').update({ status_bayar: baru }).eq('nama_project', it.nama).is('deleted_at', null).then()
-    })
+    const projects = items.map((it: { nama: string }) => it.nama).filter(Boolean)
+    if (projects.length) {
+      const { error: jobError } = await supabase.from('job').update({
+        status_bayar: baru,
+        tanggal_lunas: baru === 'Lunas' ? new Date().toISOString().split('T')[0] : null,
+      }).in('nama_project', projects).is('deleted_at', null)
+      if (jobError) { alert('Status invoice berubah, tapi status Job gagal diubah.'); return }
+    }
     loadInvoices()
   }
 
