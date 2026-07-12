@@ -47,7 +47,7 @@ export default function Dashboard() {
 
     // Deadline ≤ 3 hari, exclude Sudah Dikirim & Lunas
     const nearDeadline = jobs.filter(j => {
-      if (!j.deadline || j.status_edit === 'Sudah Dikirim' || j.status_bayar === 'Lunas') return false
+      if (!j.deadline || j.status_edit === 'Sudah Dikirim' || j.status_edit === 'Selesai' || j.status_bayar === 'Lunas') return false
       const days = hitungSelisihHari(j.deadline)
       return days !== null && days <= 3
     }).sort((a, b) => (a.deadline || '').localeCompare(b.deadline || '')).slice(0, 10)
