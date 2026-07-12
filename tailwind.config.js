@@ -15,6 +15,9 @@ export default {
           DEFAULT: '#0f172a',
           light: '#1e293b',
         }
+      },
+      fontFamily: {
+        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'sans-serif'],
       }
     },
   },
