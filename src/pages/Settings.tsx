@@ -18,9 +18,8 @@ export default function Settings() {
     })
   }, [])
 
-  async function doBackup() {
-    // Di Supabase, backup = export database dari dashboard
-    window.open('https://supabase.com/dashboard/project/etczyvlsiebdvosxdegd/settings/database', '_blank')
+  function openSheet() {
+    window.open('https://docs.google.com/spreadsheets/d/1xc5AIj93ssn8M3YCIRUT8-oG8AEg5c0cJ8e8POqYdNY/edit?usp=sharing', '_blank')
   }
 
   return (
@@ -57,11 +56,19 @@ export default function Settings() {
         {/* Actions */}
         <div className="bg-white rounded-xl border border-slate-200 p-5">
           <h3 className="font-semibold text-slate-900 mb-4">Backup & Sync</h3>
-          <p className="text-sm text-slate-500 mb-4">Data otomatis tersimpan di cloud. Untuk backup manual, export dari dashboard Supabase.</p>
-          <button onClick={doBackup} className="flex items-center gap-2 px-4 py-2.5 border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
-            Buka Dashboard Supabase
-          </button>
+          <p className="text-sm text-slate-500 mb-4">
+            Data otomatis tersimpan di Supabase. Backup harian ke Google Sheet berjalan otomatis tiap jam 02:00.
+          </p>
+          <div className="space-y-2">
+            <button onClick={openSheet} className="flex items-center gap-2 w-full px-4 py-2.5 border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+              Buka Google Sheet Backup
+            </button>
+            <button onClick={() => window.open('https://supabase.com/dashboard/project/etczyvlsiebdvosxdegd/settings/database', '_blank')} className="flex items-center gap-2 w-full px-4 py-2.5 border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>
+              Buka Dashboard Supabase
+            </button>
+          </div>
         </div>
       </div>
     </div>
