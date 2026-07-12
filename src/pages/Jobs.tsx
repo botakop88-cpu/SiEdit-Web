@@ -123,6 +123,14 @@ export default function Jobs() {
       tanggal_lunas: statusBayar === 'Lunas' ? new Date().toISOString().split('T')[0] : null,
       updated_at: new Date().toISOString()
     }).in('id', jobIds)
+    setSelectedIds(new Set())
+    loadData()
+  }
+
+  async function batchDelete() {
+    if (!confirm('Hapus '+selectedIds.size+' job terpilih?')) return
+    await supabase.from('job').update({ deleted_at: new Date().toISOString() }).in('id', [...selectedIds])
+    setSelectedIds(new Set())
     loadData()
   }
 
@@ -221,6 +229,7 @@ export default function Jobs() {
             <span className="text-sm font-medium text-blue-800">{selectedIds.size} terpilih:</span>
             <button onClick={() => batchUpdateStatus([...selectedIds], 'Lunas')} className="px-3 py-1 bg-green-600 text-white text-xs rounded">Tandai Lunas</button>
             <button onClick={() => batchUpdateStatus([...selectedIds], 'Belum Bayar')} className="px-3 py-1 bg-red-600 text-white text-xs rounded">Tandai Belum Bayar</button>
+            <button onClick={batchDelete} className="px-3 py-1 bg-red-700 text-white text-xs rounded">Hapus</button>
             <button onClick={() => setSelectedIds(new Set())} className="px-3 py-1 bg-slate-300 text-slate-700 text-xs rounded">Batal</button>
           </div>
         )}
