@@ -49,7 +49,6 @@ export default function Invoices() {
     const total = jobs.reduce((s, j) => s + j.harga, 0)
     const items = jobs.map(j => ({ nama: j.nama_project, harga: j.harga, jenis: j.jenis_edit }))
 
-    // Generate invoice number
     const { count } = await supabase.from('invoice').select('id', { count: 'exact', head: true })
     const no = String((count || 0) + 1).padStart(4, '0')
     const invNo = `INV-${no}`
@@ -60,12 +59,12 @@ export default function Invoices() {
       tanggal: new Date().toISOString().split('T')[0],
       items_json: JSON.stringify(items),
       total,
+      status_bayar: 'Belum Bayar',
       created_at: new Date().toISOString(),
     })
 
     if (error) { alert('Gagal buat invoice'); return }
 
-    // Buka tab baru dengan halaman PDF
     const win = window.open('', '_blank')
     if (!win) { alert('Pop-up diblokir. Izinkan pop-up untuk membuka PDF.'); return }
     generatePDF(win, invNo, v.nama, new Date().toLocaleDateString('id-ID'), items, total)
@@ -81,6 +80,15 @@ export default function Invoices() {
     if (!win) { alert('Pop-up diblokir. Izinkan pop-up untuk membuka PDF.'); return }
     const items = JSON.parse(inv.items_json || '[]')
     generatePDF(win, inv.id.slice(0, 8).toUpperCase(), inv.vendor_nama, inv.tanggal, items, inv.total)
+  }
+
+  async function toggleStatus(inv: any, e: React.MouseEvent) {
+    e.stopPropagation()
+    if (!confirm(`Ubah status invoice ${inv.vendor_nama} menjadi ${inv.status_bayar === 'Lunas' ? 'Belum Bayar' : 'Lunas'}?`)) return
+    const baru = inv.status_bayar === 'Lunas' ? 'Belum Bayar' : 'Lunas'
+    const { error } = await supabase.from('invoice').update({ status_bayar: baru }).eq('id', inv.id)
+    if (error) { alert('Gagal ubah status'); return }
+    loadInvoices()
   }
 
   async function deleteInvoice(id: string) {
@@ -146,7 +154,6 @@ export default function Invoices() {
       </header>
 
       <div className="p-4 md:p-6">
-        {/* Tabs */}
         <div className="flex gap-1 mb-6 p-1 bg-slate-100 rounded-lg w-fit">
           <button onClick={() => setTab('buat')} className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${tab === 'buat' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>Buat Invoice Baru</button>
           <button onClick={() => setTab('riwayat')} className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${tab === 'riwayat' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>Riwayat Invoice</button>
@@ -215,14 +222,22 @@ export default function Invoices() {
                       <p className="font-medium text-slate-900 truncate">{inv.vendor_nama}</p>
                       <p className="text-xs text-slate-500">{formatTanggal(inv.tanggal)} • {rupiah(inv.total)}</p>
                     </div>
-                    <span className="text-xs text-slate-400 mr-3">Items: {JSON.parse(inv.items_json || '[]').length}</span>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); deleteInvoice(inv.id); }}
-                      className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                      title="Hapus invoice"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-slate-400 mr-1">Items: {JSON.parse(inv.items_json || '[]').length}</span>
+                      <button
+                        onClick={(e) => toggleStatus(inv, e)}
+                        className={`px-3 py-1 rounded-full text-xs font-semibold border ${inv.status_bayar === 'Lunas' ? 'bg-green-100 text-green-700 border-green-300' : 'bg-red-100 text-red-700 border-red-300'}`}
+                      >
+                        {inv.status_bayar || 'Belum Bayar'}
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); deleteInvoice(inv.id); }}
+                        className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                        title="Hapus invoice"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
